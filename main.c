@@ -73,6 +73,7 @@ char *read_line(void){
                 fprintf(stderr, "lsh: allocation error\n");
                 exit(EXIT_FAILURE);
             }
+        
         }
     }
 
