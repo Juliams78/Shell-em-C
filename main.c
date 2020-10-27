@@ -1,45 +1,78 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+//#include <unistd.h> só funcionam no linux
+//#include <sys/wait.h>
+
+char *read_line(void);
+int verifica_comando( char* linha);
+
+
+int main(){
+    char *linha;
+
+    linha= read_line();
 
 
 
-int qtd_virgulas(char *str){
-    int virgulas = 0;
-    while(*str){
-        if (*str == ','){
-            virgulas++;
-        }
-        str++;
-    }
-    return virgulas;
-}
-
-
-
-int main() {
-    char string[100]; //string de entrada
-    char string1[5]= "quit";
-    int retorno;
-    int i=0;
-
-
-    do {
-
-        fflush(stdin);
-        printf("Digite a string\n");
-        scanf("%s", string);
-        fflush(stdin);
-
-
-
-        retorno = strcmp(string, string1); //compara se a string recebida é igual a 'quit'
-
-        if (retorno != 0) {
-            printf("ainda nao acabou\n");
-        }
-
-    }while(retorno); //como a função strcmp retorna 0 se as strings são iguais o programa termina se for digitado 'quit'
-
-
+    free(linha);
     return 0;
 }
+
+
+//nao esta pronta
+//ESSA FUNÇÃO VERIFICA SE HÁ VIRGULAS E SE HA COMANDOS NA LINHA INSERIDA
+int verifica_comando(char* linha){
+    int temcomando;
+
+    char *comando = malloc(sizeof(char) * 512);
+    if (!comando) {
+        fprintf(stderr, "lsh: allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+
+
+
+
+        return temcomando;
+}
+
+
+
+
+//LÊ UMA LINHA INTEIRA, CARACTERE POR CARACTERE, E FAZ UMA ALOCAÇÃO DINÂMICA
+char *read_line(void){
+    int linha = 512;
+    int posicao = 0;
+    int c;
+
+    char *buffer = malloc(sizeof(char) * linha);
+
+
+    if (!buffer) {
+        fprintf(stderr, "lsh: allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+    //ler caractere por caractere
+    while (1) {
+
+        c = getchar();
+
+        // se chegar no EOF para e retorna a linha
+        if (c == EOF || c == '\n') {
+            buffer[posicao] = '\0';
+            return buffer;
+        } else {
+            buffer[posicao] = c;
+        }
+        posicao++;
+
+        // caso exceda o limite de 512 caracteres da linha deve exibir um erro
+        if (posicao >= linha) {
+                fprintf(stderr, "lsh: allocation error\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
