@@ -4,14 +4,17 @@
 //#include <unistd.h> só funcionam no linux
 //#include <sys/wait.h>
 
-char *read_line(void);
-int verifica_comando( char* linha);
+char *read_line (void);
+char *verifica_espaco (char* linha);
+char *verifica_virgula(char* linha);
+
 
 
 int main(){
     char *linha;
 
     linha= read_line();
+    linha= verifica_espaco(linha);
 
 
 
@@ -19,35 +22,38 @@ int main(){
     return 0;
 }
 
+//falta implementar
+char *verifica_virgula(char* linha){
 
-//nao esta pronta
-//ESSA FUNÇÃO VERIFICA SE HÁ VIRGULAS E SE HA COMANDOS NA LINHA INSERIDA
-int verifica_comando(char* linha){
-    int temcomando;
-
-    char *comando = malloc(sizeof(char) * 512);
-    if (!comando) {
-        fprintf(stderr, "lsh: allocation error\n");
-        exit(EXIT_FAILURE);
-    }
-
-
-
-
-
-        return temcomando;
 }
 
+
+
+//ESSA FUNÇÃO VERIFICA SE HÁ ESPAÇOS SEGUIDOS NA LINHA INSERIDA
+char* verifica_espaco(char* linha){
+    int i=0, posicao;
+
+        for (i=0, posicao = 0; i < strlen(linha); i++, posicao++) {
+            if (linha[posicao] == ' ')
+                if(linha[posicao+1] == ' '){
+                    while(linha[posicao+1] == ' ')
+                        posicao++;
+                }
+            linha[i] = linha[posicao];
+        }
+
+    return linha;
+
+}
 
 
 
 //LÊ UMA LINHA INTEIRA, CARACTERE POR CARACTERE, E FAZ UMA ALOCAÇÃO DINÂMICA
 char *read_line(void){
-    int linha = 512;
     int posicao = 0;
-    int c;
+    char c;
 
-    char *buffer = malloc(sizeof(char) * linha);
+    char *buffer = malloc(sizeof(char) * 512);
 
 
     if (!buffer) {
@@ -69,11 +75,10 @@ char *read_line(void){
         posicao++;
 
         // caso exceda o limite de 512 caracteres da linha deve exibir um erro
-        if (posicao >= linha) {
+        if (posicao >= 512) {
                 fprintf(stderr, "lsh: allocation error\n");
                 exit(EXIT_FAILURE);
             }
-        
         }
     }
 
