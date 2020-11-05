@@ -6,8 +6,7 @@
 
 char *read_line (void);
 char *verifica_espaco (char* linha);
-int verifica_virgulas(char* linha);
-
+int executa_processos(char **comandos);
 
 int main(){
     char *linha;
@@ -15,7 +14,7 @@ int main(){
     char **comandos = malloc(sizeof(char*) * 30);
     char **comandos2 = malloc(sizeof(char*) * 30);
     int i=0;
-    int qtd_virgula;
+    int contador=0;
 
 
     if (!comandos) {
@@ -33,20 +32,17 @@ int main(){
         printf("meu_shell> ");
         linha = read_line();
         linha = verifica_espaco(linha);
-        qtd_virgula=verifica_virgulas(linha);
+
 
 
         //esse segmento de código faz a separação da linha digitada em vários comandos
         //se é uma entrada vazia (exempo: ,,,,,,,) nada é armazenado
             comando = strtok(linha, ",");
             while (comando != NULL) {
-                if (comando[i] == ' ') { //verifica se é entrada vazia
-                    i++;
-                } else {
                     comandos[i] = comando;
+                    contador++;
                     i++;
-                }
-
+                //printf("1:%s\n", comando); //apenas para verificação deve ser excluído depois
                 comando = strtok(NULL, ",");
             }
 
@@ -54,14 +50,16 @@ int main(){
             comandos[i]=NULL;
 
                 i = 0;
-                    for(int z=0; z<(qtd_virgula+1); z++) {
+                    for(int z=0; z<contador; z++) {
                         comando = strtok(comandos[z], " ");
 
                         while (comando != NULL) { //pega todas as palavras da string
                             comandos2[i] = comando;
                             i++;
+                            //printf("2:%s\n",comando); //apenas para verificação deve ser excluído depois
                             comando = strtok(NULL, " ");
                         }
+
 
                         //aqui tem que ficar a parte de executar processos
 
@@ -70,6 +68,7 @@ int main(){
 
             //comandos2 esta armazenando a string toda sem virgula e sem espaço
             comandos2[i] = NULL;
+                    //printf("Sai do for, deu tudo certo\n"); //apenas para verificação deve ser excluído depois
 
         free(comando);
         free(comandos);
@@ -79,15 +78,32 @@ int main(){
     }
 }
 
-// conta quantas virgulas tem - nao esta sendo usada no momento
-int verifica_virgulas(char* linha){
-    int x=0, i;
-    for(i=0;i<strlen(linha); i++){
-        if(linha[i] == ',')
-            x++;
+/* //nao testado ainda
+int executa_processos(char **comandos){
+    pid_t pid, wpid;
+    int status;
+
+    pid = fork();
+    if (pid == 0) {
+        // Child process
+        if (execvp(comandos[0], comandos) == -1) {
+            perror("lsh");
+        }
+        exit(EXIT_FAILURE);
+    } else if (pid < 0) {
+        // Erro no fork
+        perror("lsh");
+    } else {
+        // Processo pai
+        do {
+            wpid = waitpid(pid, &status, WUNTRACED);
+        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
-    return x;
+
+    return 1;
 }
+*/
+
 
 
 //ESSA FUNÇÃO VERIFICA SE HÁ ESPAÇOS SEGUIDOS NA LINHA INSERIDA
