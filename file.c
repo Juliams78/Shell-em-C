@@ -1,39 +1,46 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <unistd.h> //só funcionam no linux
-//#include <sys/wait.h>
+#include <unistd.h> //só funcionam no linux
+#include <sys/wait.h>
+
+
+
 
 char *read_line (void);
 char *verifica_espaco (char* linha);
 int executa_processos(char **comandos);
+int func_help();
+int func_quit();
+
+
 
 int main(){
-    char *linha;
-    char *comando;
-    char **comandos = malloc(sizeof(char*) * 30);
-    char **comandos2 = malloc(sizeof(char*) * 30);
-    int i=0;
-    int contador=0;
+
+    int ok=1;
 
 
-    if (!comandos) {
-        fprintf(stderr, "lsh: erro de alocacao\n");
-        return 0;
-    }
+    while(ok) {
+        int i=0;
+        int contador=0;
+        char *linha;
+        char *comando;
+        char **comandos = malloc(sizeof(char*) * 30);
+        char **comandos2 = malloc(sizeof(char*) * 30);
 
-    if (!comandos2) {
-        fprintf(stderr, "lsh: erro de alocacao\n");
-        return 0;
-    }
+        if (!comandos) {
+            fprintf(stderr, "lsh: erro de alocacao\n");
+            return 0;
+        }
 
+        if (!comandos2) {
+            fprintf(stderr, "lsh: erro de alocacao\n");
+            return 0;
+        }
 
-    while(1 == 1) { //while para depois de uma execução por causa do return 0 no final
         printf("meu_shell> ");
         linha = read_line();
         linha = verifica_espaco(linha);
-
-
 
         //esse segmento de código faz a separação da linha digitada em vários comandos
         //se é uma entrada vazia (exempo: ,,,,,,,) nada é armazenado
@@ -49,36 +56,61 @@ int main(){
             //comandos esta armazenando strings separadas pela virgula
             comandos[i]=NULL;
 
-                i = 0;
-                    for(int z=0; z<contador; z++) {
-                        comando = strtok(comandos[z], " ");
+            //esse segmento de codigo separa as strings antes separados por virgula em palavras
+            i = 0;
+                for(int z=0; z<contador; z++) {
+                    comando = strtok(comandos[z], " ");
 
-                        while (comando != NULL) { //pega todas as palavras da string
-                            comandos2[i] = comando;
-                            i++;
-                            //printf("2:%s\n",comando); //apenas para verificação deve ser excluído depois
-                            comando = strtok(NULL, " ");
-                        }
-
-
-                        //aqui tem que ficar a parte de executar processos
-
-
+                    while (comando != NULL) { //pega todas as palavras da string
+                        comandos2[i] = comando;
+                        i++;
+                        //printf("2:%s\n",comando); //apenas para verificação deve ser excluído depois
+                        comando = strtok(NULL, " ");
                     }
 
+
+                }
             //comandos2 esta armazenando a string toda sem virgula e sem espaço
             comandos2[i] = NULL;
-                    //printf("Sai do for, deu tudo certo\n"); //apenas para verificação deve ser excluído depois
+
+           ok=executa_processos(comandos2);
+
+
 
         free(comando);
         free(comandos);
         free(comandos2);
         free(linha);
-        return 0;
+
     }
+
+    return 0;
 }
 
-/* //nao testado ainda
+
+
+int func_help(){
+    int i;
+    printf("Shell da Julia e da Alice\n");
+    printf("Digite os comandos e aperte enter para executar.\n");
+    printf("O símbolo '|' foi substituído pela virgula ','.\n");
+    printf("O comando para sair 'exit' foi substituído por 'quit'\n");
+    printf("Os seguintes comandos são builtin:\n");
+    printf("  help\n  quit\n");
+
+
+    return 1;
+}
+
+int func_quit (){
+    printf("Obrigada por utilizar o meu_shell. Ate mais!!\n");
+    return 0;
+}
+
+
+
+
+ //funciona apenas com um comando
 int executa_processos(char **comandos){
     pid_t pid, wpid;
     int status;
@@ -100,9 +132,9 @@ int executa_processos(char **comandos){
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
-    return 1;
+    return 1; //se deu tudo certo retorna 1
 }
-*/
+
 
 
 
