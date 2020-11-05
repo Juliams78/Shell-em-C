@@ -1,62 +1,93 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <unistd.h> só funcionam no linux
+//#include <unistd.h> //só funcionam no linux
 //#include <sys/wait.h>
 
 char *read_line (void);
 char *verifica_espaco (char* linha);
-
+int verifica_virgulas(char* linha);
 
 
 int main(){
     char *linha;
     char *comando;
     char **comandos = malloc(sizeof(char*) * 30);
+    char **comandos2 = malloc(sizeof(char*) * 30);
     int i=0;
+    int qtd_virgula;
+
 
     if (!comandos) {
         fprintf(stderr, "lsh: erro de alocacao\n");
         return 0;
     }
 
+    if (!comandos2) {
+        fprintf(stderr, "lsh: erro de alocacao\n");
+        return 0;
+    }
 
-    while(1 == 1) {
+
+    while(1 == 1) { //while para depois de uma execução por causa do return 0 no final
         printf("meu_shell> ");
         linha = read_line();
         linha = verifica_espaco(linha);
+        qtd_virgula=verifica_virgulas(linha);
+
 
         //esse segmento de código faz a separação da linha digitada em vários comandos
         //se é uma entrada vazia (exempo: ,,,,,,,) nada é armazenado
-        comando= strtok(linha, ",");
-        while(comando!= NULL){
+            comando = strtok(linha, ",");
+            while (comando != NULL) {
+                if (comando[i] == ' ') { //verifica se é entrada vazia
+                    i++;
+                } else {
+                    comandos[i] = comando;
+                    i++;
+                }
 
-            if(comando[i] == ' ') {
-                i++;
-            }else {
-                comandos[i] = comando;
-                i++;
+                comando = strtok(NULL, ",");
             }
 
-            printf("%s\n", comando); // apenas para verificação, deve ser excluído depois
-            comando = strtok(NULL, ",");
-        }
+            //comandos esta armazenando strings separadas pela virgula
+            comandos[i]=NULL;
 
-        comandos[i]= NULL;
+                i = 0;
+                    for(int z=0; z<(qtd_virgula+1); z++) {
+                        comando = strtok(comandos[z], " ");
+
+                        while (comando != NULL) { //pega todas as palavras da string
+                            comandos2[i] = comando;
+                            i++;
+                            comando = strtok(NULL, " ");
+                        }
+
+                        //aqui tem que ficar a parte de executar processos
 
 
+                    }
 
-
+            //comandos2 esta armazenando a string toda sem virgula e sem espaço
+            comandos2[i] = NULL;
 
         free(comando);
         free(comandos);
+        free(comandos2);
         free(linha);
         return 0;
     }
 }
 
-
-
+// conta quantas virgulas tem - nao esta sendo usada no momento
+int verifica_virgulas(char* linha){
+    int x=0, i;
+    for(i=0;i<strlen(linha); i++){
+        if(linha[i] == ',')
+            x++;
+    }
+    return x;
+}
 
 
 //ESSA FUNÇÃO VERIFICA SE HÁ ESPAÇOS SEGUIDOS NA LINHA INSERIDA
