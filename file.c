@@ -79,6 +79,9 @@ int main(){
                     comandos2[i] = NULL;
                     parada_loop=executar(comandos2);
                     free(comandos2);
+                    if(parada_loop == 0){
+                        break;
+                    }
                     i=0;
                 }
 
