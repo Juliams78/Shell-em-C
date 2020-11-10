@@ -1,4 +1,4 @@
-# Construindo um Interpretados Shell
+# Construindo um Interpretador Shell
 >Status do projeto: Concluído :heavy_check_mark:
 
 Alunas:
@@ -39,7 +39,7 @@ Vários problemas surgiram durante o desenvolvimento do projeto, mas felizmente 
 
 Um problema encontrado foi que não é possível concatenar mais de um comando em uma linha digitada, por exemplo, 
 em um Shell do Linux é possível concatenar os comandos ``` ls -l | cat file | grep foo file2 ``` e obter uma saída misturada devido ao uso do pipe. 
-Porém neste projeto, os comandos são executados um seguido do outro e como foi dito anteriormente, o símbolo de separação é a vírgula. Portanto se for digitado 
+Porém, neste projeto, os comandos são executados um seguido do outro e como foi dito anteriormente, o símbolo de separação é a vírgula. Portanto, se for digitado 
 ``` ls -l , cat file , grep foo file2 ```, os comandos serão executados separadamente um seguido do outro.
 
 Outro problema é que não foi possível implementar o comando ``` cd ```, utilizado para mudar de diretório no terminal. Outros _builtins_ como ```help``` e ```exit``` 
