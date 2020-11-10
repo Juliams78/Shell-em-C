@@ -12,31 +12,28 @@ char *verifica_espaco (char* linha);
 int executa_processos(char **comandos);
 int func_help();
 int func_quit();
-
+int executar(char **comandos);
 
 
 int main(){
 
-    int ok=1;
+    int parada_loop=1;
 
 
-    while(ok) {
+    while(parada_loop) {
         int i=0;
         int contador=0;
         char *linha;
         char *comando;
         char **comandos = malloc(sizeof(char*) * 30);
-        char **comandos2 = malloc(sizeof(char*) * 30);
+
 
         if (!comandos) {
             fprintf(stderr, "lsh: erro de alocacao\n");
             return 0;
         }
 
-        if (!comandos2) {
-            fprintf(stderr, "lsh: erro de alocacao\n");
-            return 0;
-        }
+
 
         printf("meu_shell> ");
         linha = read_line();
@@ -49,7 +46,6 @@ int main(){
                     comandos[i] = comando;
                     contador++;
                     i++;
-                //printf("1:%s\n", comando); //apenas para verificação deve ser excluído depois
                 comando = strtok(NULL, ",");
             }
 
@@ -59,27 +55,28 @@ int main(){
             //esse segmento de codigo separa as strings antes separados por virgula em palavras
             i = 0;
                 for(int z=0; z<contador; z++) {
+                    char **comandos2 = malloc(sizeof(char*) * 30);
+                    if (!comandos2) {
+                        fprintf(stderr, "lsh: erro de alocacao\n");
+                        return 0;
+                    }
+
                     comando = strtok(comandos[z], " ");
 
                     while (comando != NULL) { //pega todas as palavras da string
                         comandos2[i] = comando;
                         i++;
-                        //printf("2:%s\n",comando); //apenas para verificação deve ser excluído depois
                         comando = strtok(NULL, " ");
                     }
-
-
+                    comandos2[i] = NULL;
+                    parada_loop=executar(comandos2);
+                    free(comandos2);
+                    i=0;
                 }
-            //comandos2 esta armazenando a string toda sem virgula e sem espaço
-            comandos2[i] = NULL;
-
-           ok=executa_processos(comandos2);
-
 
 
         free(comando);
         free(comandos);
-        free(comandos2);
         free(linha);
 
     }
@@ -88,9 +85,8 @@ int main(){
 }
 
 
-
+//COMANDO BUILTIN HELP
 int func_help(){
-    int i;
     printf("Shell da Julia e da Alice\n");
     printf("Digite os comandos e aperte enter para executar.\n");
     printf("O símbolo '|' foi substituído pela virgula ','.\n");
@@ -98,26 +94,44 @@ int func_help(){
     printf("Os seguintes comandos são builtin:\n");
     printf("  help\n  quit\n");
 
-
+    printf("Para consultar a documentação dos outros comandos utilize 'man <comando>'\n");
     return 1;
 }
 
+//FUNÇÃO BUILTIN QUIT
 int func_quit (){
     printf("Obrigada por utilizar o meu_shell. Ate mais!!\n");
     return 0;
 }
 
+int executar(char **comandos){
+    int i;
+
+    if (comandos[0] == NULL) {
+        // An empty command was entered.
+        return 1;
+    }
+
+    for (i = 0; i < 2; i++) {
+        if (strcmp(comandos[0], "help") == 0) {
+            return func_help();
+        }else if(strcmp(comandos[0], "quit") == 0){
+            return func_quit();
+        }
+    }
+
+    return executa_processos(comandos);
+}
 
 
-
- //funciona apenas com um comando
+//FUNÇÃO DE EXECUTAR PROCESSOS
 int executa_processos(char **comandos){
     pid_t pid, wpid;
     int status;
 
     pid = fork();
     if (pid == 0) {
-        // Child process
+        // Processo filho
         if (execvp(comandos[0], comandos) == -1) {
             perror("lsh");
         }
@@ -138,7 +152,7 @@ int executa_processos(char **comandos){
 
 
 
-//ESSA FUNÇÃO VERIFICA SE HÁ ESPAÇOS SEGUIDOS NA LINHA INSERIDA
+//ESSA FUNÇÃO VERIFICA SE HÁ ESPAÇOS SEGUIDOS NA LINHA INSERIDA E OS ELIMINA
 char* verifica_espaco(char* linha){
     int i, posicao;
 
